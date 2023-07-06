@@ -134,7 +134,7 @@ func TestCreateAccountAPI(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	body := gin.H{
-		"owner": account.Owner,
+		"owner":    account.Owner,
 		"currency": account.Currency,
 	}
 
