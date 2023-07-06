@@ -13,7 +13,7 @@ import (
 	mockdb "github.com/GustavoCielo/simple-bank/db/mock"
 	db "github.com/GustavoCielo/simple-bank/db/sqlc"
 	"github.com/GustavoCielo/simple-bank/util"
-	// "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
@@ -125,33 +125,33 @@ func requireBodyMatchAccount(t *testing.T, body *bytes.Buffer, account db.Accoun
 	require.Equal(t, account, gotAccount)
 }
 
-// func TestCreateAccountAPI(t *testing.T) {
-// 	account := randomAccount()
-// 	arg := db.CreateAccountParams{
-// 		Owner:    account.Owner,
-// 		Currency: account.Currency,
-// 	}
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
-// 	body := gin.H{
-// 		"owner": account.Owner,
-// 		"currency": account.Currency,
-// 	}
+func TestCreateAccountAPI(t *testing.T) {
+	account := randomAccount()
+	arg := db.CreateAccountParams{
+		Owner:    account.Owner,
+		Currency: account.Currency,
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	body := gin.H{
+		"owner": account.Owner,
+		"currency": account.Currency,
+	}
 
-// 	store := mockdb.NewMockStore(ctrl)
-// 	store.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(arg)).Times(1).Return(account, nil)
-// 	server := NewServer(store)
-// 	recorder := httptest.NewRecorder()
+	store := mockdb.NewMockStore(ctrl)
+	store.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(arg)).Times(1).Return(account, nil)
+	server := NewServer(store)
+	recorder := httptest.NewRecorder()
 
-// 	// Marshal body data to error
-// 	data, err := json.Marshal(body)
-// 	require.NoError(t, err)
+	// Marshal body data to error
+	data, err := json.Marshal(body)
+	require.NoError(t, err)
 
-// 	url := "/accounts/"
-// 	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
-// 	require.NoError(t, err)
-// 	server.router.ServeHTTP(recorder, request)
+	url := "/accounts"
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+	require.NoError(t, err)
+	server.router.ServeHTTP(recorder, request)
 
-// 	require.Equal(t, http.StatusOK, recorder.Code)
-// 	requireBodyMatchAccount(t, recorder.Body, account)
-// }
+	require.Equal(t, http.StatusOK, recorder.Code)
+	requireBodyMatchAccount(t, recorder.Body, account)
+}
