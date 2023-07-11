@@ -13,10 +13,10 @@ import (
 
 // Server servers HTTP requests for our banking service.
 type Server struct {
-	config util.Config
-	store  db.Store
-	token  token.Maker
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
 func NewServer(config util.Config, store db.Store) (*Server, error) {
@@ -27,9 +27,9 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	}
 
 	server := &Server{
-		config: config,
-		store:  store,
-		token:  tokenMaker,
+		config:     config,
+		store:      store,
+		tokenMaker: tokenMaker,
 	}
 
 	// Binds the validation package to Gin server engine.
@@ -44,12 +44,14 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
-	router.POST("/accounts", server.createAccount)
-	router.GET("/accounts/:id", server.getAccount)
-	router.GET("/accounts", server.listAccount)
+	AuthRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	AuthRoutes.POST("/accounts", server.createAccount)
+	AuthRoutes.GET("/accounts/:id", server.getAccount)
+	AuthRoutes.GET("/accounts", server.listAccount)
 
-	router.POST("/transfers", server.createTransfer)
+	AuthRoutes.POST("/transfers", server.createTransfer)
 
+	// No Auth
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
 
