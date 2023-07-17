@@ -17,5 +17,6 @@ spec:
       containers:
         - name: simple-bank-ap
           image: image-url/simplebank:latest
+          imagePullPolicy: Always
           ports:
           - containerPort: 8080
