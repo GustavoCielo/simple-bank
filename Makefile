@@ -1,3 +1,6 @@
+
+DB_URL=postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable
+
 make postgres:
 	docker run --name postgres12 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 
@@ -8,19 +11,22 @@ dropdb:
 	docker exec -it postgres12 dropdb simple_bank
 
 migrateup:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
 # migrateup:
 #	migrate -path db/migration -database "postgresql://root:d0JvFkurQ7r8lM6GZHnx@simple-bank.csr6cvumpv2h.sa-east-1.rds.amazonaws.com:5432/simple_bank" -verbose up
 
 migrateup1:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
 
 migratedown:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
 migratedown1:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
+
+makemigrations:
+	migrate create -ext sql -dir db/migration -seq add_sessions
 
 sqlc:
 	docker run --rm -v "C:\Users\User\Desktop\projects\goschool\src\simple-bank:/src" -w /src kjconroy/sqlc generate
@@ -35,6 +41,9 @@ mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/GustavoCielo/simple-bank/db/sqlc Store
 
 docker:
-	docker run --name simplebank -p 8080:8080 -e DB_SOURCE="postgresql://root:secret@postgres12:5432/simple_bank?sslmode=disable" --network bank-network -e GIN_MODE=release simplebank:latest
+	docker run --name simplebank -p 8080:8080 -e DB_SOURCE="$(DB_URL)" --network bank-network -e GIN_MODE=release simplebank:latest
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker
+network:
+	docker network create bank-network
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker makemigrations network
