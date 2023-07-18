@@ -1,0 +1,59 @@
+Project simple-bank {
+    database_type:: 'PostgresQL'
+    Note: '''
+        # Simple Bank Database
+    '''
+}
+
+Table users as U {
+  username varchar [pk]
+  hash_password varchar [not null]
+  full_name varchar [not null]
+  email varchar [unique, not null]
+  password_changed_at timestamptz [not null, default: '0001-01-01 00:00:00Z']
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table "accounts" {
+  "id" bigserial [pk, not null, increment]
+  "owner" varchar [ref: > U.username, not null]
+  "balance" int8 [not null]
+  "currency" varchar [not null]
+  "created_at" timestamptz [not null, default: `now()`]
+
+Indexes {
+  owner [type: btree, name: "accounts_owner_idx"]
+  (owner, currency) [unique]
+}
+}
+
+Table "entries" {
+  "id" bigserial [pk, not null, increment]
+  "account_id" int8 [not null]
+  "amount" int8 [not null]
+  "created_at" timestamptz [not null, default: `now()`]
+
+Indexes {
+  account_id [type: btree, name: "entries_account_id_idx"]
+}
+}
+
+Table "transfers" {
+  "id" bigserial [pk, not null, increment]
+  "from_account_id" int8 [not null]
+  "to_account_id" int8 [not null]
+  "amount" int8 [not null]
+  "created_at" timestamptz [not null, default: `now()`]
+
+Indexes {
+  from_account_id [type: btree, name: "transfers_from_account_id_idx"]
+  (from_account_id, to_account_id) [type: btree, name: "transfers_from_account_id_to_account_id_idx"]
+  to_account_id [type: btree, name: "transfers_to_account_id_idx"]
+}
+}
+
+Ref "entries_account_id_fkey":"accounts"."id" < "entries"."account_id"
+
+Ref "transfers_from_account_id_fkey":"accounts"."id" < "transfers"."from_account_id"
+
+Ref "transfers_to_account_id_fkey":"accounts"."id" < "transfers"."to_account_id"
