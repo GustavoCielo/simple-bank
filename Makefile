@@ -25,7 +25,7 @@ migratedown:
 migratedown1:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
-makemigrations:
+migrations:
 	migrate create -ext sql -dir db/migration -seq add_sessions
 
 sqlc:
@@ -52,9 +52,10 @@ proto:
 	--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
 	--openapiv2_out=doc/swagger --openapiv2_opt=allow_merge=true,merge_file_name=simple_bank \
     proto/*.proto 
+	statik -src=./doc/swagger -dest=./doc
 
 evans:
 	evans --host localhost --port 9090 -r repl
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker makemigrations network proto evans
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker migrations network proto evans
 
