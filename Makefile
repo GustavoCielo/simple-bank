@@ -58,4 +58,3 @@ evans:
 	evans --host localhost --port 9090 -r repl
 
 .PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker migrations network proto evans
-

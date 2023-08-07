@@ -130,6 +130,7 @@ func TestGetAccountAPI(t *testing.T) {
 
 	for i := range testCases {
 		tc := testCases[i]
+		
 		t.Run(tc.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
@@ -137,7 +138,6 @@ func TestGetAccountAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			// start test server and send request
 			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
@@ -146,7 +146,6 @@ func TestGetAccountAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			tc.setupAuth(t, request, server.tokenMaker)
-
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
