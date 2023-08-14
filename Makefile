@@ -28,6 +28,15 @@ migratedown1:
 migrations:
 	migrate create -ext sql -dir db/migration -seq add_sessions
 
+new_migration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
+db_docs:
+	dbdocs build doc/db.dbml
+
+db_schema:
+	dbml2sql --postgres -o doc/schema.sql ./doc/db.dbml
+
 sqlc:
 	docker run --rm -v "C:\Users\User\Desktop\projects\goschool\src\simple-bank:/src" -w /src kjconroy/sqlc generate
 
@@ -60,4 +69,4 @@ evans:
 redis:
 	docker run --name redis -p 6379:6379 -d redis:7-alpine
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker migrations network proto evans redis
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 docker migrations network proto evans redis db_docs db_schema new_migration
