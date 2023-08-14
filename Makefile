@@ -32,7 +32,7 @@ sqlc:
 	docker run --rm -v "C:\Users\User\Desktop\projects\goschool\src\simple-bank:/src" -w /src kjconroy/sqlc generate
 
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 
 server:
 	go run main.go
