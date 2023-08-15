@@ -13,9 +13,6 @@ dropdb:
 migrateup:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
-# migrateup:
-#	migrate -path db/migration -database "postgresql://root:d0JvFkurQ7r8lM6GZHnx@simple-bank.csr6cvumpv2h.sa-east-1.rds.amazonaws.com:5432/simple_bank" -verbose up
-
 migrateup1:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
 
