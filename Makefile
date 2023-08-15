@@ -45,6 +45,7 @@ server:
 
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/GustavoCielo/simple-bank/db/sqlc Store
+	mockgen -package mockwk -destination worker/mock/distributor.go github.com/GustavoCielo/simple-bank/worker TaskDistributor
 
 docker:
 	docker run --name simplebank -p 8080:8080 -e DB_SOURCE="$(DB_URL)" --network bank-network -e GIN_MODE=release simplebank:latest
